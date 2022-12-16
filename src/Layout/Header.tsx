@@ -2,9 +2,14 @@ import * as React from 'react';
 import { AppBar, Box, Toolbar, IconButton, Typography, } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
+const styles: { [key: string]: React.CSSProperties } = {
+    flexGrow: { flexGrow: "1" },
+    mr: { marginRight: "2" }
+}
+
 const Header = () => {
     return (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={styles.flexGrow}>
             <AppBar position="static">
                 <Toolbar>
                     <IconButton
@@ -12,11 +17,11 @@ const Header = () => {
                         edge="start"
                         color="inherit"
                         aria-label="menu"
-                        sx={{ mr: 2 }}
+                        sx={styles.mr}
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" component="div" sx={styles.flexGrow}>
                         Starter
                     </Typography>
                 </Toolbar>
