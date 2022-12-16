@@ -7,18 +7,23 @@ import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/Inbox';
 import DraftsIcon from '@mui/icons-material/Drafts';
 
-const SideBar = () => {
-  const [selectedIndex, setSelectedIndex] = useState(1);
+import { useAppDispatch, useAppSelector } from '../../Services/Hook/Hook';
+import { openSideBarAction, getSelectedIndexAction, setselectedIndexAction } from '../Reducer/LayoutActions'
 
+
+const SideBar = () => {
+  const dispatch = useAppDispatch();
+  const [selectedIndex] = useState(useAppSelector(getSelectedIndexAction))
   const handleListItemClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
     index: number,
   ) => {
-    setSelectedIndex(index);
+    dispatch(setselectedIndexAction(index));
+    dispatch(openSideBarAction(false));
   };
 
   return (
-    <Box sx={{ width: "260" }}>
+    <Box sx={{ width: "260px" }}>
       <List component="nav" aria-label="main mailbox folders">
         <ListItemButton
           selected={selectedIndex === 0}
