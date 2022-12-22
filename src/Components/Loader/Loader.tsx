@@ -4,7 +4,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 const styles: { [key: string]: React.CSSProperties } = {
     container: {
-        display: "flex",
+        display: "block",
+        textAlign: "center"
     },
 }
 export const Loader = () => {

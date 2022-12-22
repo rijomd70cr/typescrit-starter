@@ -1,50 +1,92 @@
 import React, { useState } from 'react';
-import Box from '@mui/material/Box';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/Inbox';
-import DraftsIcon from '@mui/icons-material/Drafts';
+import { useNavigate } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from '../../Services/Hook/Hook';
-import { openSideBarAction, getSelectedIndexAction, setselectedIndexAction } from '../Reducer/LayoutActions'
+import { openSideBarAction, getSelectedIndexAction, setselectedIndexAction } from '../Reducer/LayoutActions';
 
+import { Box, Collapse, ListItemButton, List, ListItemIcon, ListItemText } from '@mui/material';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
+
+
+import { Menu } from '../../Services/Menus';
 
 const SideBar = () => {
   const dispatch = useAppDispatch();
-  const [selectedIndex] = useState(useAppSelector(getSelectedIndexAction))
+  const navFunc = useNavigate();
+
+
+  interface SubMenU {
+    name: string,
+    path: string,
+    icon: any,
+    submenu: any
+  }
+  // const [selectedIndex] = useState(useAppSelector(getSelectedIndexAction));
+  const [open, setOpen] = useState(false);
+
+
   const handleListItemClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
     index: number,
+    path: string,
+    type: string
   ) => {
-    dispatch(setselectedIndexAction(index));
-    dispatch(openSideBarAction(false));
+    if (type === "submenu") {
+      setOpen(!open)
+    }
+    else {
+      dispatch(setselectedIndexAction(index));
+      dispatch(openSideBarAction(false));
+      navFunc(path);
+    }
   };
 
-  return (
-    <Box sx={{ width: "260px" }}>
-      <List component="nav" aria-label="main mailbox folders">
+  const renderNavigation = (item: { submenu: SubMenU[], path: string, name: string, icon: any }, key: number, type: string) => {
+    return (
+      <List key={key} sx={{ bgcolor: 'background.paper' }} component="nav" aria-label="main mailbox folders">
         <ListItemButton
-          selected={selectedIndex === 0}
-          onClick={(event) => handleListItemClick(event, 0)}
+          onClick={(event) => handleListItemClick(event, key, item.path, type)}
         >
           <ListItemIcon>
-            <InboxIcon />
+            {item.icon}
           </ListItemIcon>
-          <ListItemText primary="Inbox" />
+          <ListItemText primary={item.name} />
+          {item.submenu.length > 0 && (open ? <ExpandLess /> : <ExpandMore />)}
         </ListItemButton>
-        <ListItemButton
-          selected={selectedIndex === 1}
-          onClick={(event) => handleListItemClick(event, 1)}
-        >
-          <ListItemIcon>
-            <DraftsIcon />
-          </ListItemIcon>
-          <ListItemText primary="Drafts" />
-        </ListItemButton>
+
+        {type === "submenu" && <Collapse in={open} timeout="auto" unmountOnExit>
+          {item.submenu.map((subitem, index) => {
+            if (subitem.submenu.length > 0) {
+              return renderNavigation(subitem, index, "submenu")
+            }
+            else {
+              return renderNavigation(subitem, index, "mainmenu")
+            }
+            return (<div></div>)
+          }
+          )}
+        </Collapse>}
+
       </List>
-    </Box>
+
+    )
+  }
+
+  return (
+    <Box sx={{ width: "260px",  background: "#fff" }}>
+      {Menu.map((item, key) => {
+        if (item.submenu.length > 0) {
+          return renderNavigation(item, key, "submenu");
+        }
+        else {
+          return renderNavigation(item, key, "mainmenu");
+        }
+        return (<div></div>)
+      }
+      )}
+    </Box >
   )
 }
 export default SideBar;
+
+

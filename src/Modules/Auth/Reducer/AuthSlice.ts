@@ -1,21 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface CounterState {
-    value: number;
-    status: String;
+    auth: boolean;
 }
 
 const initialState: CounterState = {
-    value: 1,
-    status: 'Active',
+    auth: false,
 };
 
 export const authSlice = createSlice({
     name: 'authentication',
     initialState,
     reducers: {
-        incrementByAmount: (state, action: PayloadAction<number>) => {
-            state.value += action.payload;
+        login: (state, action: PayloadAction<boolean>) => {
+            state.auth = action.payload
         },
     },
     // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -24,5 +22,5 @@ export const authSlice = createSlice({
     },
 });
 
-export const { incrementByAmount } = authSlice.actions;  //export actions
+export const { login } = authSlice.actions;  //export actions
 export default authSlice.reducer; //xport reducer

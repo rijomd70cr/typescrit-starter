@@ -1,9 +1,15 @@
 const Routes = [
     {
         name: "Login",
-        path: ["/", "/login"],
+        path: "/login",
         elementPath: "Login",
-        auth: true,
+        auth: false,
+    },
+    {
+        name: "SignUp",
+        path: "/signin",
+        elementPath: "SignUp",
+        auth: false,
     },
 ]
 

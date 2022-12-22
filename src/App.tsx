@@ -3,8 +3,8 @@ import { GeneralRoutes } from './Services/Routes/Routes';
 
 function App() {
   return (
-    <div>
-        <GeneralRoutes />
+    <div style={{ minHeight: "100vh", backgroundColor: "#f0f1f9" }}>
+      <GeneralRoutes />
     </div>
   );
 }
