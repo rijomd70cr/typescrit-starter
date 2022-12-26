@@ -1,6 +1,7 @@
 import auth from './Auth';
 import home from './DashBoard';
 
+
 // type rotuerType = {
 //     auth: boolean,
 //     elementPath: string,
@@ -13,6 +14,6 @@ import home from './DashBoard';
 //     auth: comman;
 //     home: comman
 // }
-const containers: any = { home: home,auth: auth,  };
+const containers: any = { home: home, auth: auth };
 
 export default containers

@@ -28,13 +28,13 @@ const Login = () => {
         setTimeout(() => {
             setLoading(false);
             dispatch(loginAction(true))
-            navigate('/');
+            navigate('/dashbord');
         }, 2000);
     }
 
     return (
         <Box sx={{ display: "contents" }}>
-            <Grid container spacing={3} direction={'column'} justifyContent={'center'} alignItems={'center'} minHeight="110vh">
+            <Grid container spacing={3} direction={'column'} justifyContent={'center'} alignItems={'center'} minHeight="90vh">
                 <Box>
                     <Grid item xs={12} sx={{ mt: "8px" }}>
                         <TextInput label="User Name" placeholder="Email" name="email" type="email" fullWidth={false}
@@ -50,7 +50,7 @@ const Login = () => {
                     </Grid>
                     <Grid item xs={12} sx={{ mt: "8px" }} textAlign="end">
                         <FormButton fullWidth={true} loading={isLoading} onClick={handleSumbit} style={{}} >Save </FormButton>
-                        <Link to='/signin'>Sign Up</Link>
+                        <Link to='/signup'>Sign Up</Link>
                     </Grid>
                 </Box>
             </Grid>

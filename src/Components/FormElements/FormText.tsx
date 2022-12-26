@@ -5,8 +5,8 @@ interface TextInterface {
     label: string,
     placeholder: string,
     error: { isError: boolean, errorMsg: string },
-    value: string
-    onChange: (name: string, value: string) => void,
+    value: String | number,
+    onChange: (name: string, value: any) => void,
     required: boolean,
     type: string;
     fullWidth: boolean,

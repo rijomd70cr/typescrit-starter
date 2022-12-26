@@ -1,6 +1,6 @@
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import CropOriginalIcon from '@mui/icons-material/CropOriginal';
 import InboxIcon from '@mui/icons-material/Inbox';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 
 interface IRouteDto {
   name: string,
@@ -14,12 +14,13 @@ export const Menu: IRouteDto[] = [
     name: "DashBoard",
     path: "/dashbord",
     icon: <DashboardIcon />,
-    submenu: [{ name: "DashBoard 1", path: "/dashbord1", icon: <InboxIcon /> ,submenu:[]}]
+    submenu: []
+    // submenu: [{ name: "DashBoard 1", path: "/dashbord", icon: <InboxIcon /> ,submenu:[]}]
   },
   {
-    name: "Customers",
-    path: "/customers",
-    icon: <AssignmentIndIcon />,
+    name: "TextEditor",
+    path: "/editor",
+    icon: <CropOriginalIcon />,
     submenu: []
   }
 ]

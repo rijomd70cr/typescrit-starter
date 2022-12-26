@@ -10,14 +10,14 @@ type Props = {
 }
 
 export const FormButton = (props: Props) => {
-    const { fullWidth, children, onClick, loading, style } = props;
+    const { fullWidth, children, onClick, loading, style = { fontSize: "11px" } } = props;
 
     return (
         <Box>
             <LoadingButton loading={loading} loadingIndicator={
                 <CircularProgress
                     color="inherit"
-                    size={16}
+                    size="small"
                     sx={{ paddingLeft: '5px', paddingRight: '5px' }}
                 />
             }

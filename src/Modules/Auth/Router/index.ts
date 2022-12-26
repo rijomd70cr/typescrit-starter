@@ -7,7 +7,7 @@ const Routes = [
     },
     {
         name: "SignUp",
-        path: "/signin",
+        path: "/signup",
         elementPath: "SignUp",
         auth: false,
     },

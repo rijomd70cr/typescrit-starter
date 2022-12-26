@@ -24,14 +24,13 @@ export const GeneralRoutes = () => {
     const SideBar = lazy(() => import('../../Layout/Components/SideBar'));
     const Login = lazy(() => import('../../Modules/Auth/Views/Login'));
 
-    useEffect(() => {
-        isAuthenticated = localStorage.getItem("user") ? true : false;
-    }, [isAuth])
+    isAuthenticated = localStorage.getItem("user") ? true : false;
+    // useEffect(() => {
+    // }, [isAuth])
 
 
     const PrivateRoute: FC<PropType> = ({ component: Component, auth: Auth }) => {
         if (Auth) {
-            console.log(isAuthenticated, "isAuthenticated")
             if (isAuthenticated) { return <Component />; }
             else { return <Navigate to='/login' />; }
         }
@@ -39,32 +38,34 @@ export const GeneralRoutes = () => {
     };
 
     const renderGeneratedRoutes = () => {
-        for (let item in containers) {
-            let router = containers[item].router;
-            let moduleName = containers[item].moduleName;
+        let element = [];
 
+        for (let data in containers) {
+            let router = containers[data].router;
+            let moduleName = containers[data].moduleName;
             for (let item of router) {
                 let elementPath = item.elementPath;
                 let auth = item.auth;
-                if (item.path !== '/login') {
-                    const generated = lazy(() => import('../../Modules/' + moduleName + '/Views/' + elementPath));
-                    return <Route path={item.path} element={< PrivateRoute component={generated} auth={auth} />} />
-                }
+                const generated = lazy(() => import('../../Modules/' + moduleName + '/Views/' + elementPath));
+                element.push(
+                    <Routes key={elementPath}>
+                        {item.path === '/login' && <Route path='/login' element={<Login />} />}
+                        {item.path !== '/login' && <Route path={item.path} element={< PrivateRoute component={generated} auth={auth} />} />}
+                    </Routes>
+                )
             }
         }
+        return element;
     }
 
     return (
         <div>
             <BrowserRouter>
                 <Suspense fallback={<Loader />}>
-                    {isAuthenticated && <Header />}
-                    <div style={{ display: "flex" }}>
+                    {!window.location.pathname.includes('login' || 'signup') && isAuthenticated && <Header />}
+                    <div style={{ display: "flex", minHeight: "90vh" }}>
                         {isSideBarOpen && <SideBar />}
-                        <Routes>
-                            <Route path='/login' element={<Login />} />
-                            {renderGeneratedRoutes()}
-                        </Routes>
+                        {renderGeneratedRoutes()}
                     </div>
                 </Suspense>
             </BrowserRouter>
