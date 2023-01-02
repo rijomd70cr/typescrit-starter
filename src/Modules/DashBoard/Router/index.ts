@@ -1,7 +1,7 @@
 const Routes = [
     {
         name: "DashBoard",
-        path: "/dashbord",
+        path: "/",
         elementPath: "DashBoard",
         auth: true,
     },

@@ -1,14 +1,31 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import Module from '../../Modules';
-import authReducer from '../../Modules/Auth/Reducer/AuthSlice';
 import layoutReducer from '../../Layout/Reducer/LayoutSlice';
 
+
+
+let reducer = {};
+for (let item in Module) {
+  let reducers = Module[item].reducer;
+  reducer = {
+    ...reducer,
+    [item]: reducers
+  }
+};
+if (Object.keys(reducer).length !== 0) {
+  reducer = { ...reducer, layout: layoutReducer }
+}
+
 export const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    layout: layoutReducer,
-  },
+  reducer: reducer
 });
+
+// export const store = configureStore({
+//   reducer: {
+//     auth: authReducer,
+//     layout: layoutReducer,
+//   },
+// });
 
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;

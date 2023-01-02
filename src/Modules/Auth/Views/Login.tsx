@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Box, Grid, } from '@mui/material';
 
 import { TextInput, FormButton } from '../../../Components/FormElements';
-import { useRouting, useAppDispatch } from '../../../Services/Hook/Hook';
+import { useAppDispatch } from '../../../Services/Hook/Hook';
 import { loginAction } from '../../../Modules/Auth/Reducer/AuthAction';
 
 const Login = () => {
@@ -23,12 +23,11 @@ const Login = () => {
         setLoading(true);
         if (login.email) {
             localStorage.setItem("user", JSON.stringify(login));
-            // useRouting('/');
         }
         setTimeout(() => {
             setLoading(false);
             dispatch(loginAction(true))
-            navigate('/dashbord');
+            navigate('/');
         }, 2000);
     }
 

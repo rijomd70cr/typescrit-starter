@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, FC, useEffect } from 'react';
+import React, { lazy, Suspense, FC } from 'react';
 import { BrowserRouter, Route, Routes, Navigate, } from "react-router-dom";
 
 import { Loader } from '../../Components/Loader/Loader';
@@ -25,9 +25,6 @@ export const GeneralRoutes = () => {
     const Login = lazy(() => import('../../Modules/Auth/Views/Login'));
 
     isAuthenticated = localStorage.getItem("user") ? true : false;
-    // useEffect(() => {
-    // }, [isAuth])
-
 
     const PrivateRoute: FC<PropType> = ({ component: Component, auth: Auth }) => {
         if (Auth) {
