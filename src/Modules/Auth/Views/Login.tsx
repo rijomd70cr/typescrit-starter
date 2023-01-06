@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { Box, Grid, } from '@mui/material';
 
@@ -58,4 +58,4 @@ const Login = () => {
     )
 }
 
-export default Login;
+export default memo(Login);

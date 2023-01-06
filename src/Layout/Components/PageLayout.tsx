@@ -1,17 +1,18 @@
 import React from 'react'
-import { Box, Grid, Typography, Button, } from '@mui/material';
+import { Box, Grid, Button, } from '@mui/material';
+import { HeaderText } from '../../Components/HeaderText';
 
 const styles: { [key: string]: React.CSSProperties } = {
     layout: { width: "100%", background: "#fff", margin: "1.3rem", marginBottom: "0px", padding: "8px" },
     container: { minHeight: "40px" }
 }
 type typeAction = {
-    label: String,
+    label: string,
     icon: JSX.Element,
     onClick: (data: Object) => Object,
 }
 type Props = {
-    title: String,
+    title: string,
     children: any,
     actions: typeAction[]
 }
@@ -23,7 +24,7 @@ export const PageLayout = (props: Props) => {
         <Box sx={styles.layout}>
             <Grid container sx={styles.container}>
                 <Grid item md={6} xs={12}>
-                    <Typography variant="button" >{title}</Typography>
+                    <HeaderText title={title} />
                 </Grid>
                 <Grid item md={6} xs={12} textAlign="end">
                     {actions.length > 0 && actions.map((item, index) => {

@@ -1,5 +1,5 @@
+import { useState, memo } from 'react';
 import { Box, Grid, } from '@mui/material';
-import { useState } from 'react';
 import { TextInput, FormButton } from '../../../Components/FormElements'
 import { Link } from "react-router-dom";
 
@@ -19,14 +19,14 @@ const SignUp = (props: Props) => {
 
     const handleSumbit = () => {
         setLoading(true);
-     
+
         setTimeout(() => {
             setLoading(false);
         }, 2000);
     }
 
     return (
-        <Box sx={{display:"contents"}}>
+        <Box sx={{ display: "contents" }}>
             <Grid container spacing={3} direction={'column'} justifyContent={'center'} alignItems={'center'} minHeight="110vh">
                 <Box>
                     <Grid item xs={12} sx={{ mt: "8px" }}>
@@ -41,7 +41,7 @@ const SignUp = (props: Props) => {
                             error={{ isError: false, errorMsg: "" }} value={signin.password}
                         />
                     </Grid>
-                    <Grid item xs={12} sx={{ mt: "8px" }}  textAlign="end">
+                    <Grid item xs={12} sx={{ mt: "8px" }} textAlign="end">
                         <FormButton fullWidth={true} loading={isLoading} onClick={handleSumbit} style={{}} >Save </FormButton>
                         <Link to='/login'>Login</Link>
                     </Grid>
@@ -52,4 +52,4 @@ const SignUp = (props: Props) => {
     )
 }
 
-export default SignUp
+export default memo(SignUp);

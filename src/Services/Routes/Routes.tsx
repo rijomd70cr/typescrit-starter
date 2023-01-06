@@ -1,11 +1,10 @@
-import React, { lazy, Suspense, FC } from 'react';
+import React, { lazy, Suspense, FC, useCallback } from 'react';
 import { BrowserRouter, Route, Routes, Navigate, } from "react-router-dom";
 
 import { Loader } from '../../Components/Loader/Loader';
 
 import { useAppSelector } from '../../Services/Hook/Hook';
 import { getSideBarStatus } from '../../Layout/Reducer/LayoutActions';
-import { getAuthAction } from '../../Modules/Auth/Reducer/AuthAction';
 
 import containers from '../../Modules'
 
@@ -17,7 +16,6 @@ let isAuthenticated: (boolean);
 
 
 export const GeneralRoutes = () => {
-    const isAuth = useAppSelector(getAuthAction);
     const isSideBarOpen = useAppSelector(getSideBarStatus);
 
     const Header = lazy(() => import('../../Layout/Components/Header'));
@@ -34,26 +32,27 @@ export const GeneralRoutes = () => {
         return <Component />;
     };
 
-    const renderGeneratedRoutes = () => {
-        let element = [];
-
-        for (let data in containers) {
-            let router = containers[data].router;
-            let moduleName = containers[data].moduleName;
-            for (let item of router) {
-                let elementPath = item.elementPath;
-                let auth = item.auth;
-                const generated = lazy(() => import('../../Modules/' + moduleName + '/Views/' + elementPath));
-                element.push(
-                    <Routes key={elementPath}>
-                        {item.path === '/login' && <Route path='/login' element={<Login />} />}
-                        {item.path !== '/login' && <Route path={item.path} element={< PrivateRoute component={generated} auth={auth} />} />}
-                    </Routes>
-                )
+    const renderGeneratedRoutes = useCallback(
+        () => {
+            let element = [];
+            for (let data in containers) {
+                let router = containers[data].router;
+                let moduleName = containers[data].moduleName;
+                for (let item of router) {
+                    let elementPath = item.elementPath;
+                    let auth = item.auth;
+                    const generated = lazy(() => import('../../Modules/' + moduleName + '/Views/' + elementPath));
+                    element.push(
+                        <Routes key={elementPath}>
+                            {item.path === '/login' && <Route path='/login' element={<Login />} />}
+                            {item.path !== '/login' && <Route path={item.path} element={< PrivateRoute component={generated} auth={auth} />} />}
+                        </Routes>
+                    )
+                }
             }
-        }
-        return element;
-    }
+            return element;
+        }, [window?.location?.pathname])
+
 
     return (
         <div>

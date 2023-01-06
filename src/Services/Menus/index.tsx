@@ -18,8 +18,8 @@ export const Menu: IRouteDto[] = [
     // submenu: [{ name: "DashBoard 1", path: "/dashbord", icon: <InboxIcon /> ,submenu:[]}]
   },
   {
-    name: "TextEditor",
-    path: "/editor",
+    name: "Sample",
+    path: "/sample",
     icon: <CropOriginalIcon />,
     submenu: []
   }
