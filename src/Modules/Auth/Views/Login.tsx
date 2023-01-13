@@ -4,7 +4,13 @@ import { Box, Grid, } from '@mui/material';
 
 import { TextInput, FormButton } from '../../../Components/FormElements';
 import { useAppDispatch } from '../../../Services/Hook/Hook';
+
 import { loginAction } from '../../../Modules/Auth/Reducer/AuthAction';
+import { requestMethod } from '../../../Services/Request';
+
+import { loginUrl } from '../Config/urlConstants';
+
+
 
 const Login = () => {
     const [login, setlogin] = useState({ email: "", password: "" });
@@ -19,16 +25,19 @@ const Login = () => {
         })
     }
 
-    const handleSumbit = () => {
+    const handleSumbit = async () => {
         setLoading(true);
         if (login.email) {
-            localStorage.setItem("user", JSON.stringify(login));
+            await requestMethod(loginUrl, login, "post").then(
+                (res) => {
+                    console.log(res);
+                    dispatch(loginAction(true));
+                    navigate('/');
+                    setLoading(false);
+                },
+            )
+            // localStorage.setItem("user", JSON.stringify(login));
         }
-        setTimeout(() => {
-            setLoading(false);
-            dispatch(loginAction(true))
-            navigate('/');
-        }, 2000);
     }
 
     return (

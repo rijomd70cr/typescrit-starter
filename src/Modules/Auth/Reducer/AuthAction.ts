@@ -1,5 +1,5 @@
 import { RootState, AppThunk } from '../../../Services/Store/Store';
-import { login } from './AuthSlice';
+import { login, signIn } from './AuthSlice';
 
 
 export const loginAction = (status: boolean): AppThunk =>
@@ -8,3 +8,9 @@ export const loginAction = (status: boolean): AppThunk =>
     }
 
 export const getAuthAction = (state: RootState) => state.auth.auth;
+
+
+export const signUpAction = (data: Object): AppThunk =>
+    (dispatch, getState) => {
+        dispatch(signIn(data));
+    }

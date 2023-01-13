@@ -1,14 +1,25 @@
 import { useState, memo } from 'react';
 import { Box, Grid, } from '@mui/material';
-import { TextInput, FormButton } from '../../../Components/FormElements'
 import { Link } from "react-router-dom";
+
+import { TextInput, FormButton } from '../../../Components/FormElements';
+import { SnackBar } from '../../../Components/AlertBoxes/SnackBar';
+
+import { useAppDispatch } from '../../../Services/Hook/Hook';
+import { signUpAction } from "../Reducer/AuthAction";
+import { requestMethod } from '../../../Services/Request';
+
+import { signInUrl } from '../Config/urlConstants';
+
 
 
 type Props = {}
-
 const SignUp = (props: Props) => {
     const [signin, setsignin] = useState({ email: "", password: "" });
+    const [isopenAlert, setOpenAlert] = useState(false)
     const [isLoading, setLoading] = useState(false);
+    const [alertMessege, setAlertMessege] = useState("")
+    const dispatch = useAppDispatch();
 
     const handleChange = (name: string, value: string) => {
         setsignin({
@@ -17,12 +28,17 @@ const SignUp = (props: Props) => {
         })
     }
 
-    const handleSumbit = () => {
+    const handleSumbit = async () => {
         setLoading(true);
-
-        setTimeout(() => {
-            setLoading(false);
-        }, 2000);
+        await requestMethod(signInUrl, signin, "post").then(
+            (res) => {
+                console.log(res);
+                dispatch(signUpAction(res?.data));
+                setLoading(false);
+                setAlertMessege(res.message);
+                setOpenAlert(true);
+            },
+        )
     }
 
     return (
@@ -46,6 +62,12 @@ const SignUp = (props: Props) => {
                         <Link to='/login'>Login</Link>
                     </Grid>
                 </Box>
+
+                {isopenAlert && <SnackBar open={isopenAlert} handleClose={() => setOpenAlert(false)}
+                    message={alertMessege} typeOfAlert="success" vertical="top"
+                    horizontal="center" transitionElement={{ element: "SlideTransition", direction: "down" }}
+                />}
+
             </Grid>
 
         </Box >
