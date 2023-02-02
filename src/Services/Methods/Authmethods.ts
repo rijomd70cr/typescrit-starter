@@ -1,3 +1,5 @@
+import { api_Development } from "../Config/ApiConstants";
+
 export const ACCESS_TOKEN: string = "ACCESS_TOKEN";
 export const AUTH_USER: string = "AUTH_USER";
 
@@ -23,4 +25,8 @@ export const getRequestHeaders = async (method: string, query: any) => {
     requestOptions["body"] = JSON.stringify(query);
   }
   return requestOptions;
+};
+
+export const getMyAPiUrl = (): string => {
+  return api_Development;
 };
