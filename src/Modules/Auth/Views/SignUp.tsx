@@ -1,23 +1,32 @@
-import { useState, memo } from "react";
+import { useState, memo, useEffect } from "react";
 import { Box, Grid } from "@mui/material";
 import { Link } from "react-router-dom";
 
 import { TextInput, FormButton } from "../../../Components/FormElements";
 import { SnackBar } from "../../../Components/AlertBoxes/SnackBar";
 
-import { useAppDispatch } from "../../../Services/Hook/Hook";
 import { signUpAction } from "../Reducer/AuthAction";
-import { requestMethod } from "../../../Services/Request";
-
 import { signInUrl } from "../Config/urlConstants";
+
+import {
+  getRequestHeaders,
+  getMyAPiUrl,
+} from "../../../Services/Methods/Authmethods";
+import { useAppDispatch, useFetchWithAbort } from "../../../Services/Hook/Hook";
 
 type Props = {};
 const SignUp = (props: Props) => {
   const [signin, setsignin] = useState({ email: "", password: "" });
   const [isopenAlert, setOpenAlert] = useState(false);
-  const [isLoading, setLoading] = useState(false);
+  const [typeOfAlert, setTypeOfAlert] = useState("");
+
   const [alertMessege, setAlertMessege] = useState("");
+  const [isLoading, setLoading] = useState(false);
+  const [url, setMyUrl] = useState<string>("");
+  const [requestOptions, setRequestOptions] = useState<any>({});
+
   const dispatch = useAppDispatch();
+  const signinRequest = useFetchWithAbort(url, requestOptions);
 
   const handleChange = (name: string, value: string) => {
     setsignin({
@@ -28,14 +37,27 @@ const SignUp = (props: Props) => {
 
   const handleSumbit = async () => {
     setLoading(true);
-    await requestMethod(signInUrl, signin, "post").then((res) => {
-      console.log(res);
-      dispatch(signUpAction(res?.data));
-      setLoading(false);
-      setAlertMessege(res.message);
-      setOpenAlert(true);
-    });
+    let options = await getRequestHeaders("POST", signin);
+    setRequestOptions(options);
+    let myApi = getMyAPiUrl() + "/" + signInUrl;
+    setMyUrl(myApi);
   };
+
+  useEffect(() => {
+    if (signinRequest?.fetchedData) {
+      let fetchedData: any = signinRequest?.fetchedData;
+      console.log(fetchedData, "fetchedData");
+      setLoading(false);
+      setOpenAlert(true);
+      setAlertMessege(fetchedData.message);
+      if (fetchedData.status) {
+        setTypeOfAlert("success");
+        dispatch(signUpAction(fetchedData.data));
+      } else {
+        setTypeOfAlert("error");
+      }
+    }
+  }, [signinRequest?.fetchedData]);
 
   return (
     <Box sx={{ display: "contents" }}>
@@ -57,9 +79,9 @@ const SignUp = (props: Props) => {
               fullWidth={false}
               onChange={(name, value) => handleChange(name, value)}
               required={true}
+              onKeyPress={() => {}}
               error={{ isError: false, errorMsg: "" }}
               value={signin.email}
-              onKeyPress={() => {}}
             />
           </Grid>
           <Grid item xs={12} sx={{ mt: "8px" }}>
@@ -68,12 +90,12 @@ const SignUp = (props: Props) => {
               placeholder="Password"
               name="password"
               type="password"
+              onKeyPress={() => {}}
               fullWidth={false}
               onChange={(name, value) => handleChange(name, value)}
               required={true}
               error={{ isError: false, errorMsg: "" }}
               value={signin.password}
-              onKeyPress={() => {}}
             />
           </Grid>
           <Grid item xs={12} sx={{ mt: "8px" }} textAlign="end">
@@ -94,7 +116,7 @@ const SignUp = (props: Props) => {
             open={isopenAlert}
             handleClose={() => setOpenAlert(false)}
             message={alertMessege}
-            typeOfAlert="success"
+            typeOfAlert={typeOfAlert}
             vertical="top"
             horizontal="center"
             transitionElement={{
