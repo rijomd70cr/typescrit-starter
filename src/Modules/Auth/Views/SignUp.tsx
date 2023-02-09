@@ -1,4 +1,4 @@
-import { useState, memo, useEffect } from "react";
+import { useState, memo, useEffect, useMemo } from "react";
 import { Box, Grid } from "@mui/material";
 import { Link } from "react-router-dom";
 
@@ -17,7 +17,7 @@ import { useAppDispatch, useFetchWithAbort } from "../../../Services/Hook/Hook";
 type Props = {};
 const SignUp = (props: Props) => {
   const [signin, setsignin] = useState({ email: "", password: "" });
-  const [isopenAlert, setOpenAlert] = useState(false);
+  const [isopenAlert, setOpenAlert] = useState<boolean>(false);
   const [typeOfAlert, setTypeOfAlert] = useState("");
 
   const [alertMessege, setAlertMessege] = useState("");
@@ -46,18 +46,39 @@ const SignUp = (props: Props) => {
   useEffect(() => {
     if (signinRequest?.fetchedData) {
       let fetchedData: any = signinRequest?.fetchedData;
-      console.log(fetchedData, "fetchedData");
-      setLoading(false);
-      setOpenAlert(true);
-      setAlertMessege(fetchedData.message);
-      if (fetchedData.status) {
-        setTypeOfAlert("success");
-        dispatch(signUpAction(fetchedData.data));
-      } else {
-        setTypeOfAlert("error");
+      if (Object.keys(fetchedData).length !== 0) {
+        setLoading(false);
+        setAlertMessege(fetchedData.message);
+        if (fetchedData.status) {
+          setTypeOfAlert("success");
+          setOpenAlert(true);
+          dispatch(signUpAction(fetchedData.data));
+        } else {
+          setTypeOfAlert("error");
+          setOpenAlert(true);
+        }
       }
     }
   }, [signinRequest?.fetchedData]);
+
+  const snacksbar = useMemo(() => {
+    if (isopenAlert) {
+      return (
+        <SnackBar
+          open={isopenAlert}
+          handleClose={() => setOpenAlert(false)}
+          message={alertMessege}
+          typeOfAlert={typeOfAlert}
+          vertical="top"
+          horizontal="center"
+          transitionElement={{
+            element: "SlideTransition",
+            direction: "down",
+          }}
+        />
+      );
+    }
+  }, [isopenAlert]);
 
   return (
     <Box sx={{ display: "contents" }}>
@@ -110,21 +131,7 @@ const SignUp = (props: Props) => {
             <Link to="/login">Login</Link>
           </Grid>
         </Box>
-
-        {isopenAlert && (
-          <SnackBar
-            open={isopenAlert}
-            handleClose={() => setOpenAlert(false)}
-            message={alertMessege}
-            typeOfAlert={typeOfAlert}
-            vertical="top"
-            horizontal="center"
-            transitionElement={{
-              element: "SlideTransition",
-              direction: "down",
-            }}
-          />
-        )}
+        {snacksbar}
       </Grid>
     </Box>
   );
