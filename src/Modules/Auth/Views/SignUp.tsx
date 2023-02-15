@@ -49,7 +49,7 @@ const SignUp = (props: Props) => {
       if (Object.keys(fetchedData).length !== 0) {
         setLoading(false);
         setAlertMessege(fetchedData.message);
-        if (fetchedData.status) {
+        if (fetchedData.error_code === 200) {
           setTypeOfAlert("success");
           setOpenAlert(true);
           dispatch(signUpAction(fetchedData.data));

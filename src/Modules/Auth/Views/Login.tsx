@@ -49,13 +49,13 @@ const Login = () => {
         let fetchedData: any = loginRequest?.fetchedData;
         if (Object.keys(fetchedData).length !== 0) {
           let data = {
-            access_token: fetchedData?.data?.access_token,
+            access_token: fetchedData?.data?.token,
             user: fetchedData?.data?.user,
           };
           setLoading(false);
           setOpenAlert(true);
           setAlertMessege(fetchedData.message);
-          if (fetchedData.status) {
+          if (fetchedData.error_code === 200) {
             setTypeOfAlert("success");
             dispatch(loginAction(data, true));
             navigate("/");
@@ -119,7 +119,7 @@ const Login = () => {
               name="password"
               type="password"
               fullWidth={false}
-              onKeyPress={() => {}}
+              onKeyPress={handleSumbit}
               onChange={(name, value) => handleChange(name, value)}
               required={true}
               error={{ isError: false, errorMsg: "" }}
