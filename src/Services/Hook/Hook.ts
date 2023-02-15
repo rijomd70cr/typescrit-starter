@@ -92,3 +92,9 @@ export const useFetchWithAbort = (
   return { fetchedData, isLoading, error };
 };
 // ************************** fetching method***********************
+
+// **************************** force full rendering ***************
+export const useForceUpdate = () => {
+  const [value, setValue] = useState(0);
+  return () => setValue((value) => value + 1);
+};
