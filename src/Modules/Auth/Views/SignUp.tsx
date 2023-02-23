@@ -122,6 +122,7 @@ const SignUp = (props: Props) => {
           <Grid item xs={12} sx={{ mt: "8px" }} textAlign="end">
             <FormButton
               fullWidth={true}
+              color="primary"
               loading={isLoading}
               onClick={handleSumbit}
               style={{}}

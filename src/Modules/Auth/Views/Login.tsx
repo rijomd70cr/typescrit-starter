@@ -132,6 +132,7 @@ const Login = () => {
               loading={isLoading}
               onClick={handleSumbit}
               style={{}}
+              color="primary"
             >
               Save{" "}
             </FormButton>

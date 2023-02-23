@@ -57,10 +57,9 @@ export const useFetchWithAbort = (
   const [fetchedData, setFetchedData] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
   useEffect(() => {
-    let abortController = new AbortController();
     (async () => {
+      let abortController = new AbortController();
       try {
         if (endpoint) {
           const response = await fetch(endpoint, {
@@ -84,16 +83,14 @@ export const useFetchWithAbort = (
         setIsLoading(false);
       }
     })();
-    return () => {
-      abortController.abort();
-    };
+    return () => {};
   }, [endpoint, options]);
 
   return { fetchedData, isLoading, error };
 };
 // ************************** fetching method***********************
 
-// **************************** force full rendering ***************
+// **************************** forcefull rendering ***************
 export const useForceUpdate = () => {
   const [value, setValue] = useState(0);
   return () => setValue((value) => value + 1);

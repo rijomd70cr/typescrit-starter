@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, FC, useCallback } from "react";
+import React, { lazy, Suspense, FC, useMemo } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 
 import { Loader } from "../../Components/Loader/Loader";
@@ -35,7 +35,7 @@ export const GeneralRoutes = React.memo(() => {
     return <Component />;
   };
 
-  const renderGeneratedRoutes = useCallback(() => {
+  const renderGeneratedRoutes = useMemo(() => {
     let element = [];
     for (let data in containers) {
       let router = containers[data].router;
@@ -64,15 +64,27 @@ export const GeneralRoutes = React.memo(() => {
     return element;
   }, [window?.location?.pathname]);
 
+  const sideBarMenu = useMemo(() => {
+    return isSideBarOpen ? <SideBar /> : <></>;
+  }, [isSideBarOpen]);
+
+  const headerMenu = useMemo(() => {
+    return !window.location.pathname.includes("login" || "signup") &&
+      isAuthenticated ? (
+      <Header />
+    ) : (
+      <></>
+    );
+  }, [isAuthenticated]);
+
   return (
     <div>
       <BrowserRouter>
         <Suspense fallback={<Loader />}>
-          {!window.location.pathname.includes("login" || "signup") &&
-            isAuthenticated && <Header />}
+          {headerMenu}
           <div style={{ display: "flex", minHeight: "90vh" }}>
-            {isSideBarOpen && <SideBar />}
-            {renderGeneratedRoutes()}
+            {sideBarMenu}
+            {renderGeneratedRoutes}
           </div>
         </Suspense>
       </BrowserRouter>
