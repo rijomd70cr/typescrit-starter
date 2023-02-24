@@ -8,10 +8,7 @@ import { SnackBar } from "../../../Components/AlertBoxes/SnackBar";
 import { loginUrl } from "../Config/urlConstants";
 import { useAppDispatch, useFetchWithAbort } from "../../../Services/Hook/Hook";
 
-import {
-  getRequestHeaders,
-  getMyAPiUrl,
-} from "../../../Services/Methods/Authmethods";
+import { getRequestHeaders } from "../../../Services/Methods/Authmethods";
 import { loginAction } from "../../../Modules/Auth/Reducer/AuthAction";
 
 const Login = () => {
@@ -39,8 +36,7 @@ const Login = () => {
     setLoading(true);
     let options = await getRequestHeaders("POST", login);
     setRequestOptions(options);
-    let myApi = getMyAPiUrl() + "/" + loginUrl;
-    setMyUrl(myApi);
+    setMyUrl(loginUrl);
   };
 
   useEffect(() => {

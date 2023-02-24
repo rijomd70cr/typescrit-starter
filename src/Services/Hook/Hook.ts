@@ -5,7 +5,7 @@ import type { RootState, AppDispatch } from "../Store/Store";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 interface IUseFetchWithAbortResponse {
-  fetchedData: unknown;
+  fetchedData: any;
   isLoading: boolean;
   error: Error | null;
 }

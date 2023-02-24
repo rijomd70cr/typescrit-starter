@@ -8,10 +8,7 @@ import { SnackBar } from "../../../Components/AlertBoxes/SnackBar";
 import { signUpAction } from "../Reducer/AuthAction";
 import { signInUrl } from "../Config/urlConstants";
 
-import {
-  getRequestHeaders,
-  getMyAPiUrl,
-} from "../../../Services/Methods/Authmethods";
+import { getRequestHeaders } from "../../../Services/Methods/Authmethods";
 import { useAppDispatch, useFetchWithAbort } from "../../../Services/Hook/Hook";
 
 type Props = {};
@@ -39,8 +36,7 @@ const SignUp = (props: Props) => {
     setLoading(true);
     let options = await getRequestHeaders("POST", signin);
     setRequestOptions(options);
-    let myApi = getMyAPiUrl() + "/" + signInUrl;
-    setMyUrl(myApi);
+    setMyUrl(signInUrl);
   };
 
   useEffect(() => {
