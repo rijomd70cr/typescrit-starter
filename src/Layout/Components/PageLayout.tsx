@@ -8,7 +8,7 @@ import { FormButton } from "../../Components/FormElements/FormButton";
 type typeAction = {
   label: string;
   icon: JSX.Element;
-  color:any,
+  color: any;
   onClick: (data: Object) => Object;
 };
 type Props = {
@@ -27,7 +27,7 @@ export const PageLayout = (props: Props) => {
       marginBottom: "0px",
       padding: "8px",
     },
-    container: { minHeight: "40px" },
+    container: { minHeight: "40px", width: "100%" },
   };
 
   return (
@@ -57,8 +57,8 @@ export const PageLayout = (props: Props) => {
         </Grid>
       </Grid>
       <hr style={{ border: "1px solid #f0f1f9" }}></hr>
-      <Grid container>
-        <Grid item md={12}>
+      <Grid container sx={styles.container}>
+        <Grid item lg={12} md={12} xs={12}>
           {children}
         </Grid>
       </Grid>

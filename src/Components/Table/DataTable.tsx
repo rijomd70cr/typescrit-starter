@@ -5,7 +5,7 @@ import { getRequestHeaders } from "../../Services/Methods/Authmethods";
 import { useFetchWithAbort } from "../../Services/Hook/Hook";
 
 type Props = {
-  columns: any;
+  columns: any[];
   title: string;
   myApi: string;
   reload: number;

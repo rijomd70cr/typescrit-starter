@@ -1,3 +1,4 @@
+// Normal data table
 export const changDataContent = (
   tableData: any[],
   changeColumnData: any[]
