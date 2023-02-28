@@ -30,9 +30,13 @@ Example:-
 
 <!-- <NormalTable
 headers={headers}
-headerStyle={headerStyle}
+headerStyle={{backgroundColor: "#ccc",color: "black",textAlign: "start",height: "40px",}}
 tableData={columns}
 extraColumn={extraColumn}
 capitalizingHeaders={true}
 changeColumnData={changeColumnData}
-/> -->
+pagination={true}
+footerStyle={{}}
+onRowClick={() => {}}
+sortBy={"name"}
+</NormalTable> -->

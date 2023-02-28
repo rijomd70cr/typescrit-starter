@@ -6,12 +6,16 @@ import {
   TableHead,
   TableRow,
   TablePagination,
+  TableSortLabel,
 } from "@mui/material";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import { styled } from "@mui/material/styles";
 
 import { changDataContent } from "./TableMethods";
 import { capitalizingData } from "../../Utils/HelperFunctions";
+import { stableSort, getComparator } from "./TableMethods";
+
+type Order = "asc" | "desc";
 
 type Props = {
   headers: any[];
@@ -22,6 +26,8 @@ type Props = {
   changeColumnData: any[];
   pagination: boolean;
   footerStyle: { [x: string]: string };
+  sortBy: string;
+  onRowClick: any;
 };
 
 export const NormalTable = ({
@@ -33,6 +39,8 @@ export const NormalTable = ({
   changeColumnData = [],
   pagination = false,
   footerStyle = {},
+  sortBy,
+  onRowClick,
 }: Props) => {
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -49,13 +57,15 @@ export const NormalTable = ({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const [order, setOrder] = useState<Order>("asc");
+  const [orderBy, setOrderBy] = useState<string>(sortBy ? sortBy : "id");
+
   useEffect(() => {
     setNormalTableData(tableData);
     if (tableData?.length > 0 && changeColumnData?.length > 0) {
       let newArray: any[] = changDataContent(tableData, changeColumnData);
       setNormalTableData(newArray);
     }
-
     return () => {};
   }, [changeColumnData, tableData]);
 
@@ -69,7 +79,11 @@ export const NormalTable = ({
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
+  const handleRequestSort = (property: any) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
   return (
     <div>
       <TableContainer style={{ marginTop: "1rem" }}>
@@ -86,9 +100,15 @@ export const NormalTable = ({
                   key: number
                 ) => (
                   <StyledTableCell key={key}>
-                    {capitalizingHeaders
-                      ? capitalizingData(item.headerName)
-                      : item.headerName}
+                    <TableSortLabel
+                      active={orderBy === item.name}
+                      direction={orderBy === item.name ? order : "asc"}
+                      onClick={() => handleRequestSort(item.name)}
+                    >
+                      {capitalizingHeaders
+                        ? capitalizingData(item.headerName)
+                        : item.headerName}
+                    </TableSortLabel>
                   </StyledTableCell>
                 )
               )}
@@ -105,10 +125,18 @@ export const NormalTable = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {normalTableData
+            {stableSort(normalTableData, getComparator(order, orderBy))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((columnItem: any, columnKey: number) => (
-                <TableRow key={columnKey}>
+                <TableRow
+                  hover={typeof onRowClick === "function" ? true : false}
+                  style={{
+                    cursor:
+                      typeof onRowClick === "function" ? "pointer" : "default",
+                  }}
+                  key={columnKey}
+                  onClick={() => onRowClick(columnItem)}
+                >
                   {headers.map(
                     (
                       headerItem: {
@@ -120,7 +148,7 @@ export const NormalTable = ({
                     ) => {
                       return (
                         // {item.renderDataContent<div></div>}
-                        <TableCell key={headerKey}>
+                        <TableCell key={headerKey} style={{ lineHeight: 0 }}>
                           {typeof headerItem.renderDataContent === "function"
                             ? headerItem.renderDataContent(
                                 columnItem[headerItem.name]
@@ -132,7 +160,7 @@ export const NormalTable = ({
                   )}
                   {extraColumn.length > 0 &&
                     extraColumn.map((item: any, key: number) => (
-                      <TableCell key={key}>
+                      <TableCell key={key} style={{ lineHeight: 0 }}>
                         {item.content ? (
                           <div onClick={() => item.onClick(columnItem)}>
                             {item.content}
