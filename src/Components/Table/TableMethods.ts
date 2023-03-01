@@ -57,3 +57,20 @@ export function stableSort<T>(
   });
   return stabilizedThis.map((el) => el[0]);
 }
+
+export const selectFromCheckBox = (selectedData: any, data: any) => {
+  let duplicate: any;
+  if (selectedData?.length > 0) {
+    duplicate = selectedData?.find(
+      (item: any) => JSON.stringify(item) === JSON.stringify(data)
+    );
+  }
+  if (duplicate) {
+    selectedData = selectedData.filter(
+      (item: any) => JSON.stringify(item) !== JSON.stringify(duplicate)
+    );
+  } else {
+    selectedData.push(data);
+  }
+  return selectedData;
+};

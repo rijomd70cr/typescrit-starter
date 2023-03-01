@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -7,13 +7,14 @@ import {
   TableRow,
   TablePagination,
   TableSortLabel,
+  Checkbox,
 } from "@mui/material";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import { styled } from "@mui/material/styles";
 
 import { changDataContent } from "./TableMethods";
 import { capitalizingData } from "../../Utils/HelperFunctions";
-import { stableSort, getComparator } from "./TableMethods";
+import { stableSort, getComparator, selectFromCheckBox } from "./TableMethods";
 
 type Order = "asc" | "desc";
 
@@ -28,6 +29,7 @@ type Props = {
   footerStyle: { [x: string]: string };
   sortBy: string;
   onRowClick: any;
+  onRowSelected: boolean;
 };
 
 export const NormalTable = ({
@@ -39,8 +41,9 @@ export const NormalTable = ({
   changeColumnData = [],
   pagination = false,
   footerStyle = {},
-  sortBy,
   onRowClick,
+  sortBy,
+  onRowSelected = false,
 }: Props) => {
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -59,6 +62,10 @@ export const NormalTable = ({
 
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<string>(sortBy ? sortBy : "id");
+  const [selected, setSelected] = useState<any[]>([]);
+
+  const [forceUpdate, setForceUpdate] = useState(0);
+  // let isItemSelected: boolean = false;
 
   useEffect(() => {
     setNormalTableData(tableData);
@@ -72,7 +79,6 @@ export const NormalTable = ({
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
-
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -84,12 +90,54 @@ export const NormalTable = ({
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
+  const isSelected = (data: any) => {
+    console.log(selected, "isSelected");
+    if (selected?.length > 0) {
+      let exist = selected?.find(
+        (item: any) => JSON.stringify(item) === JSON.stringify(data)
+      );
+      return exist ? true : false;
+    } else {
+      return false;
+    }
+  };
+
+  const handleClick = (data: any) => {
+    let newSelected = selectFromCheckBox(selected, data);
+    setSelected(newSelected);
+    setForceUpdate(forceUpdate + 1);
+  };
+  const onSelectAllClick = (data: boolean) => {
+    data ? setSelected([]) : setSelected([...normalTableData]);
+    setForceUpdate(forceUpdate + 1);
+  };
+  const tableHeadCheckBox = useCallback(() => {
+    if (normalTableData?.length > 0 && selected?.length > 0) {
+      let isSelectedAll: boolean = selected.length === normalTableData.length;
+      return (
+        <StyledTableCell>
+          <Checkbox
+            color="primary"
+            checked={isSelectedAll}
+            onClick={() => onSelectAllClick(isSelectedAll)}
+            inputProps={{
+              "aria-label": "select all desserts",
+            }}
+          />
+        </StyledTableCell>
+      );
+    }
+  }, [forceUpdate]);
+
   return (
     <div>
       <TableContainer style={{ marginTop: "1rem" }}>
         <Table size="small" aria-label="a dense table">
           <TableHead>
             <TableRow>
+              {onRowSelected && (
+                <StyledTableCell>{tableHeadCheckBox()}</StyledTableCell>
+              )}
               {headers.map(
                 (
                   item: {
@@ -127,51 +175,65 @@ export const NormalTable = ({
           <TableBody>
             {stableSort(normalTableData, getComparator(order, orderBy))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((columnItem: any, columnKey: number) => (
-                <TableRow
-                  hover={typeof onRowClick === "function" ? true : false}
-                  style={{
-                    cursor:
-                      typeof onRowClick === "function" ? "pointer" : "default",
-                  }}
-                  key={columnKey}
-                  onClick={() => onRowClick(columnItem)}
-                >
-                  {headers.map(
-                    (
-                      headerItem: {
-                        name: string;
-                        headerName: string;
-                        renderDataContent: (data: any) => {};
-                      },
-                      headerKey: number
-                    ) => {
-                      return (
-                        // {item.renderDataContent<div></div>}
-                        <TableCell key={headerKey} style={{ lineHeight: 0 }}>
-                          {typeof headerItem.renderDataContent === "function"
-                            ? headerItem.renderDataContent(
-                                columnItem[headerItem.name]
-                              )
-                            : columnItem[headerItem.name]}
-                        </TableCell>
-                      );
-                    }
-                  )}
-                  {extraColumn.length > 0 &&
-                    extraColumn.map((item: any, key: number) => (
-                      <TableCell key={key} style={{ lineHeight: 0 }}>
-                        {item.content ? (
-                          <div onClick={() => item.onClick(columnItem)}>
-                            {item.content}
-                          </div>
-                        ) : (
-                          <div>-</div>
-                        )}
+              .map((columnItem: any, columnKey: number) => {
+                const isItemSelected = isSelected(columnItem);
+                return (
+                  <TableRow
+                    hover={typeof onRowClick === "function" ? true : false}
+                    style={{
+                      cursor:
+                        typeof onRowClick === "function"
+                          ? "pointer"
+                          : "default",
+                    }}
+                    key={columnKey}
+                    onClick={() => onRowClick(columnItem)}
+                    selected={isItemSelected}
+                  >
+                    {onRowSelected && (
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          color="primary"
+                          checked={isItemSelected}
+                          onClick={() => handleClick(columnItem)}
+                        />
                       </TableCell>
-                    ))}
-                </TableRow>
-              ))}
+                    )}
+                    {headers.map(
+                      (
+                        headerItem: {
+                          name: string;
+                          headerName: string;
+                          renderDataContent: (data: any) => {};
+                        },
+                        headerKey: number
+                      ) => {
+                        return (
+                          <TableCell key={headerKey} style={{ lineHeight: 0 }}>
+                            {typeof headerItem.renderDataContent === "function"
+                              ? headerItem.renderDataContent(
+                                  columnItem[headerItem.name]
+                                )
+                              : columnItem[headerItem.name]}
+                          </TableCell>
+                        );
+                      }
+                    )}
+                    {extraColumn.length > 0 &&
+                      extraColumn.map((item: any, key: number) => (
+                        <TableCell key={key} style={{ lineHeight: 0 }}>
+                          {item.content ? (
+                            <div onClick={() => item.onClick(columnItem)}>
+                              {item.content}
+                            </div>
+                          ) : (
+                            <div>-</div>
+                          )}
+                        </TableCell>
+                      ))}
+                  </TableRow>
+                );
+              })}
           </TableBody>
         </Table>
       </TableContainer>

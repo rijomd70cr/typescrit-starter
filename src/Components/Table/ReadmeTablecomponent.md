@@ -38,5 +38,6 @@ changeColumnData={changeColumnData}
 pagination={true}
 footerStyle={{}}
 onRowClick={() => {}}
-sortBy={"name"}
+onRowSelected={true or false}  //for checked rows
+sortBy={"name"}  //sort by initial
 </NormalTable> -->
