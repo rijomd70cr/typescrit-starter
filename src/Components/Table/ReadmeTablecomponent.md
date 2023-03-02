@@ -1,11 +1,12 @@
 1.  ######### NORMAL TABLE COMPONENT ###########
+    Table props:-
 
-Table props:-
+        import {selectBox} from "...//path
 
-let headers: any[] = [
-{name: "id",headerName:"a", isFilterEnabled: true,filterComponent: "",},{ name: "name" ,headerName:"c",isFilterEnabled: false,filterComponent: <component />,},
-{name: "status",renderDataContent: (data: any) => {return <Component />}},
-];
+    let headers: any[] = [
+    {name: "id",headerName:"a", isFilterEnabled: true,filterComponent: "",},{ name: "name" ,headerName:"c",isFilterEnabled: false,filterComponent: selectBox,},
+    {name: "status",renderDataContent: (data: any) => {return <Component />}},
+    ];
 
 let tableData:any=[];
 

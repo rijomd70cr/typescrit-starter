@@ -27,7 +27,7 @@ type headersInterface = {
   headerName: string;
   renderDataContent: (data: any) => {};
   isFilterEnabled: boolean;
-  filterComponent: any;
+  FilterComponent: any;
 };
 type Props = {
   headers: any[];
@@ -175,6 +175,7 @@ export const NormalTable = ({
                 <StyledTableCell>{tableHeadCheckBox()}</StyledTableCell>
               )}
               {headerValues.map((item: headersInterface, key: number) => {
+                const { FilterComponent } = item;
                 return (
                   <StyledTableCell key={key}>
                     <TableSortLabel
@@ -189,8 +190,12 @@ export const NormalTable = ({
                     </TableSortLabel>
                     {item.isFilterEnabled && (
                       <div>
-                        {item.filterComponent ? (
-                          item.filterComponent
+                        {FilterComponent ? (
+                          <FilterComponent
+                            onchangeSelectBox={(data: any) =>
+                              handleFilter(data, item.name)
+                            }
+                          />
                         ) : (
                           <input
                             placeholder={item.headerName}
