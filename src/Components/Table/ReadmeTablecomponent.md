@@ -3,7 +3,7 @@
 Table props:-
 
 let headers: any[] = [
-{name: "id",headerName:"a"},{ name: "name" ,headerName:"c"},
+{name: "id",headerName:"a", isFilterEnabled: true,filterComponent: "",},{ name: "name" ,headerName:"c",isFilterEnabled: false,filterComponent: <component />,},
 {name: "status",renderDataContent: (data: any) => {return <Component />}},
 ];
 
@@ -31,7 +31,7 @@ Example:-
 <!-- <NormalTable
 headers={headers}
 headerStyle={{backgroundColor: "#ccc",color: "black",textAlign: "start",height: "40px",}}
-tableData={columns}
+tableData={tableData}
 extraColumn={extraColumn}
 capitalizingHeaders={true}
 changeColumnData={changeColumnData}

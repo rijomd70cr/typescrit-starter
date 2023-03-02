@@ -14,10 +14,21 @@ import { styled } from "@mui/material/styles";
 
 import { changDataContent } from "./TableMethods";
 import { capitalizingData } from "../../Utils/HelperFunctions";
-import { stableSort, getComparator, selectFromCheckBox } from "./TableMethods";
+import {
+  stableSort,
+  getComparator,
+  selectFromCheckBox,
+  filterByHeaders,
+} from "./TableMethods";
 
 type Order = "asc" | "desc";
-
+type headersInterface = {
+  name: string;
+  headerName: string;
+  renderDataContent: (data: any) => {};
+  isFilterEnabled: boolean;
+  filterComponent: any;
+};
 type Props = {
   headers: any[];
   headerStyle: { [x: string]: string };
@@ -57,6 +68,7 @@ export const NormalTable = ({
   }));
   const footer = { ...footerStyle, borderBottom: "1px solid #ccc" };
   const [normalTableData, setNormalTableData] = useState<any[]>([]);
+  const [headerValues, setHeaderValues] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -65,14 +77,16 @@ export const NormalTable = ({
   const [selected, setSelected] = useState<any[]>([]);
 
   const [forceUpdate, setForceUpdate] = useState(0);
-  // let isItemSelected: boolean = false;
+  const [values, setValues] = useState<any>({});
 
   useEffect(() => {
     setNormalTableData(tableData);
     if (tableData?.length > 0 && changeColumnData?.length > 0) {
       let newArray: any[] = changDataContent(tableData, changeColumnData);
       setNormalTableData(newArray);
+      setHeaderValues(headers);
     }
+
     return () => {};
   }, [changeColumnData, tableData]);
 
@@ -91,7 +105,6 @@ export const NormalTable = ({
     setOrderBy(property);
   };
   const isSelected = (data: any) => {
-    console.log(selected, "isSelected");
     if (selected?.length > 0) {
       let exist = selected?.find(
         (item: any) => JSON.stringify(item) === JSON.stringify(data)
@@ -129,6 +142,29 @@ export const NormalTable = ({
     }
   }, [forceUpdate]);
 
+  const handleFilter = (value: string, filterType: string) => {
+    let filterObject;
+    if (!value) {
+      delete values[filterType];
+      filterObject = {
+        ...values,
+      };
+    } else {
+      filterObject = {
+        ...values,
+        [filterType]: value.toString(),
+      };
+    }
+    setValues(filterObject);
+
+    if (Object.keys(filterObject)?.length > 0) {
+      let filteredArray = filterByHeaders(tableData, filterObject);
+      setNormalTableData(filteredArray);
+    } else {
+      setNormalTableData(tableData);
+    }
+  };
+
   return (
     <div>
       <TableContainer style={{ marginTop: "1rem" }}>
@@ -138,17 +174,11 @@ export const NormalTable = ({
               {onRowSelected && (
                 <StyledTableCell>{tableHeadCheckBox()}</StyledTableCell>
               )}
-              {headers.map(
-                (
-                  item: {
-                    name: string;
-                    headerName: string;
-                    renderDataContent: () => {};
-                  },
-                  key: number
-                ) => (
+              {headerValues.map((item: headersInterface, key: number) => {
+                return (
                   <StyledTableCell key={key}>
                     <TableSortLabel
+                      style={{ padding: "0px 5px" }}
                       active={orderBy === item.name}
                       direction={orderBy === item.name ? order : "asc"}
                       onClick={() => handleRequestSort(item.name)}
@@ -157,9 +187,33 @@ export const NormalTable = ({
                         ? capitalizingData(item.headerName)
                         : item.headerName}
                     </TableSortLabel>
+                    {item.isFilterEnabled && (
+                      <div>
+                        {item.filterComponent ? (
+                          item.filterComponent
+                        ) : (
+                          <input
+                            placeholder={item.headerName}
+                            style={{
+                              backgroundColor: "#fff",
+                              margin: "5px 0px",
+                              outline: "none",
+                              border: "none",
+                              height: "30px",
+                              width: "100%",
+                              padding: "5px",
+                            }}
+                            onChange={(e) =>
+                              handleFilter(e?.target.value, item.name)
+                            }
+                            value={values[item.name]}
+                          />
+                        )}
+                      </div>
+                    )}
                   </StyledTableCell>
-                )
-              )}
+                );
+              })}
               {extraColumn.length > 0 &&
                 extraColumn.map((item: any, key: number) => (
                   <StyledTableCell key={key}>
@@ -187,7 +241,11 @@ export const NormalTable = ({
                           : "default",
                     }}
                     key={columnKey}
-                    onClick={() => onRowClick(columnItem)}
+                    onClick={
+                      typeof onRowClick === "function"
+                        ? () => onRowClick(columnItem)
+                        : () => {}
+                    }
                     selected={isItemSelected}
                   >
                     {onRowSelected && (
@@ -199,15 +257,8 @@ export const NormalTable = ({
                         />
                       </TableCell>
                     )}
-                    {headers.map(
-                      (
-                        headerItem: {
-                          name: string;
-                          headerName: string;
-                          renderDataContent: (data: any) => {};
-                        },
-                        headerKey: number
-                      ) => {
+                    {headerValues.map(
+                      (headerItem: headersInterface, headerKey: number) => {
                         return (
                           <TableCell key={headerKey} style={{ lineHeight: 0 }}>
                             {typeof headerItem.renderDataContent === "function"
@@ -237,6 +288,13 @@ export const NormalTable = ({
           </TableBody>
         </Table>
       </TableContainer>
+
+      {normalTableData?.length === 0 && (
+        <div style={{ width: "100%", textAlign: "center", margin: "1rem 0px" }}>
+          No records found
+        </div>
+      )}
+
       {pagination && (
         <TablePagination
           style={footer}
