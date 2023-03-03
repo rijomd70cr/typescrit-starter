@@ -62,7 +62,8 @@ capitalizingHeaders={true}
 changeColumnData={changeColumnData}
 pagination={true}
 footerStyle={{}}
-onRowClick={() => {}}
+onRowClick={() => {}} //false :-no action or any function
 onRowSelected={true or false}  //for checked rows
+onChangeRowSelected={(item: any[]) => console.log(item)}
 sortBy={"name"}  //sort by initial
 </NormalTable> -->

@@ -40,6 +40,7 @@ type Props = {
   sortBy: string;
   onRowClick: any;
   onRowSelected: boolean;
+  onChangeRowSelected: (data: any[]) => void;
 };
 
 export const NormalTable = ({
@@ -52,6 +53,7 @@ export const NormalTable = ({
   footerStyle = {},
   onRowClick,
   sortBy,
+  onChangeRowSelected = () => {},
   onRowSelected = false,
 }: Props) => {
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -115,6 +117,7 @@ export const NormalTable = ({
   const handleClick = (data: any) => {
     let newSelected = selectFromCheckBox(selected, data);
     setSelected(newSelected);
+    onChangeRowSelected(newSelected);
     setForceUpdate(forceUpdate + 1);
   };
   const onSelectAllClick = (data: boolean) => {
