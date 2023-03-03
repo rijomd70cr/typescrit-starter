@@ -78,7 +78,7 @@ export const selectFromCheckBox = (selectedData: any, data: any) => {
 export const filterByHeaders = (tableData: any[], filterObject: any): any[] => {
   return tableData.filter(function (obj) {
     return Object.keys(filterObject).every(function (c) {
-      return obj[c].toString().includes(filterObject[c]);
+      return obj[c]?.toString().includes(filterObject[c]);
     });
   });
 };

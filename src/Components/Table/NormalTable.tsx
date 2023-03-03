@@ -79,12 +79,11 @@ export const NormalTable = ({
 
   useEffect(() => {
     setNormalTableData(tableData);
+    setHeaderValues(headers);
     if (tableData?.length > 0 && changeColumnData?.length > 0) {
       let newArray: any[] = changDataContent(tableData, changeColumnData);
       setNormalTableData(newArray);
-      setHeaderValues(headers);
     }
-
     return () => {};
   }, [changeColumnData, tableData]);
 
@@ -275,7 +274,7 @@ export const NormalTable = ({
                     )}
                     {extraColumn.length > 0 &&
                       extraColumn.map((item: any, key: number) => (
-                        <TableCell key={key} style={{ lineHeight: 0 }}>
+                        <TableCell key={key} style={item.style}>
                           {item.content ? (
                             <div onClick={() => item.onClick(columnItem)}>
                               {item.content}

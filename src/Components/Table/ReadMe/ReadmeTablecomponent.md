@@ -36,6 +36,7 @@ let tableData:any=[];
 let extraColumn: any[] = [{
 headerName: "Actions",
 content: <div style={{ color: "red" }}>HERE</div>,
+style: { width: "10%" },
 onClick: (data: any) => {
 console.log(data, "hhh");},
 }];

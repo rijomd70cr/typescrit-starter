@@ -8,7 +8,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 
 type Props = {
-  onChange: (data: Dayjs | null) => void;
+  onChange: (data: any | null) => void;
 };
 
 export const DatePickerSearch = ({ onChange }: Props) => {
@@ -16,7 +16,7 @@ export const DatePickerSearch = ({ onChange }: Props) => {
 
   const handleChange = (newValue: Dayjs | null) => {
     setValue(newValue);
-    onChange(newValue);
+    onChange(newValue?.toISOString());
   };
 
   return (
