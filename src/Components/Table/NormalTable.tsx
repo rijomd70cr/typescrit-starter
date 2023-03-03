@@ -12,14 +12,14 @@ import {
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import { styled } from "@mui/material/styles";
 
-import { changDataContent } from "./TableMethods";
+import { changDataContent } from "./Methods/TableMethods";
 import { capitalizingData } from "../../Utils/HelperFunctions";
 import {
   stableSort,
   getComparator,
   selectFromCheckBox,
   filterByHeaders,
-} from "./TableMethods";
+} from "./Methods/TableMethods";
 
 type Order = "asc" | "desc";
 type headersInterface = {
@@ -32,7 +32,6 @@ type headersInterface = {
 type Props = {
   headers: any[];
   headerStyle: { [x: string]: string };
-  capitalizingHeaders: boolean;
   tableData: any[];
   extraColumn: any[];
   changeColumnData: any[];
@@ -47,7 +46,6 @@ export const NormalTable = ({
   headers = [],
   headerStyle,
   tableData,
-  capitalizingHeaders,
   extraColumn = [],
   changeColumnData = [],
   pagination = false,
@@ -165,6 +163,50 @@ export const NormalTable = ({
     }
   };
 
+  const renderTableHead = useCallback(() => {
+    return headerValues.map((item: headersInterface, key: number) => {
+      const { FilterComponent } = item;
+      return (
+        <StyledTableCell key={key}>
+          <TableSortLabel
+            style={{ padding: "0px 5px" }}
+            active={orderBy === item.name}
+            direction={orderBy === item.name ? order : "asc"}
+            onClick={() => handleRequestSort(item.name)}
+          >
+            {item.headerName}
+          </TableSortLabel>
+          {item.isFilterEnabled && (
+            <div>
+              {FilterComponent ? (
+                <>
+                  {FilterComponent({
+                    onchange: (data: any) => handleFilter(data, item.name),
+                  })}
+                </>
+              ) : (
+                <input
+                  placeholder={item.headerName}
+                  style={{
+                    backgroundColor: "#fff",
+                    margin: "5px 0px",
+                    outline: "none",
+                    border: "none",
+                    height: "30px",
+                    width: "100%",
+                    padding: "5px",
+                  }}
+                  onChange={(e) => handleFilter(e?.target.value, item.name)}
+                  value={values[item.name]}
+                />
+              )}
+            </div>
+          )}
+        </StyledTableCell>
+      );
+    });
+  }, [headerValues, orderBy, order]);
+
   return (
     <div>
       <TableContainer style={{ marginTop: "1rem" }}>
@@ -174,51 +216,7 @@ export const NormalTable = ({
               {onRowSelected && (
                 <StyledTableCell>{tableHeadCheckBox()}</StyledTableCell>
               )}
-              {headerValues.map((item: headersInterface, key: number) => {
-                const { FilterComponent } = item;
-                return (
-                  <StyledTableCell key={key}>
-                    <TableSortLabel
-                      style={{ padding: "0px 5px" }}
-                      active={orderBy === item.name}
-                      direction={orderBy === item.name ? order : "asc"}
-                      onClick={() => handleRequestSort(item.name)}
-                    >
-                      {capitalizingHeaders
-                        ? capitalizingData(item.headerName)
-                        : item.headerName}
-                    </TableSortLabel>
-                    {item.isFilterEnabled && (
-                      <div>
-                        {FilterComponent ? (
-                          <FilterComponent
-                            onchangeSelectBox={(data: any) =>
-                              handleFilter(data, item.name)
-                            }
-                          />
-                        ) : (
-                          <input
-                            placeholder={item.headerName}
-                            style={{
-                              backgroundColor: "#fff",
-                              margin: "5px 0px",
-                              outline: "none",
-                              border: "none",
-                              height: "30px",
-                              width: "100%",
-                              padding: "5px",
-                            }}
-                            onChange={(e) =>
-                              handleFilter(e?.target.value, item.name)
-                            }
-                            value={values[item.name]}
-                          />
-                        )}
-                      </div>
-                    )}
-                  </StyledTableCell>
-                );
-              })}
+              {renderTableHead()}
               {extraColumn.length > 0 &&
                 extraColumn.map((item: any, key: number) => (
                   <StyledTableCell key={key}>
