@@ -1,31 +1,25 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import Module from '../../Modules';
-import layoutReducer from '../../Layout/Reducer/LayoutSlice';
+import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
+import logger from "redux-logger";
 
-
+import Module from "../../Modules";
+import layoutReducer from "../../Layout/Reducer/LayoutSlice";
 
 let reducer = {};
 for (let item in Module) {
   let reducers = Module[item].reducer;
   reducer = {
     ...reducer,
-    [item]: reducers
-  }
-};
+    [item]: reducers,
+  };
+}
 if (Object.keys(reducer).length !== 0) {
-  reducer = { ...reducer, layout: layoutReducer }
+  reducer = { ...reducer, layout: layoutReducer };
 }
 
 export const store = configureStore({
-  reducer: reducer
+  reducer: reducer,
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
 });
-
-// export const store = configureStore({
-//   reducer: {
-//     auth: authReducer,
-//     layout: layoutReducer,
-//   },
-// });
 
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;

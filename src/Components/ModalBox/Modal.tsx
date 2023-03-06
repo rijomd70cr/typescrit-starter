@@ -81,6 +81,7 @@ export const Modal = (props: Props) => {
         TransitionComponent={Transition}
         maxWidth={maxWidth} //eg:md xs sm lg xl
         fullScreen={fullScreen}
+        fullWidth={true}
         PaperComponent={PaperComponent}
       >
         {fullScreen && (
@@ -112,7 +113,15 @@ export const Modal = (props: Props) => {
             style={{ cursor: draggable ? "move" : "default" }}
             id="draggable-dialog-title"
           >
-            {title}
+            <div style={{ width: "100%", display: "flex" }}>
+              <div style={{ width: "90%" }}>{title}</div>
+              <div
+                style={{ width: "10%", cursor: "pointer" }}
+                onClick={() => handleClose()}
+              >
+                X
+              </div>
+            </div>
           </DialogTitle>
         )}
         <DialogContent dividers={scroll === "paper"}>
