@@ -4,6 +4,7 @@ import logger from "redux-logger";
 import Module from "../../Modules";
 import layoutReducer from "../../Layout/Reducer/LayoutSlice";
 
+// Adding reducers of each modules
 let reducer = {};
 for (let item in Module) {
   let reducers = Module[item].reducer;

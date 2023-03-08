@@ -8,6 +8,9 @@ import {
   TablePagination,
   TableSortLabel,
   Checkbox,
+  Collapse,
+  IconButton,
+  Box,
 } from "@mui/material";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import { styled } from "@mui/material/styles";
@@ -20,6 +23,9 @@ import {
   selectFromCheckBox,
   filterByHeaders,
 } from "./Methods/TableMethods";
+
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 type Order = "asc" | "desc";
 type headersInterface = {
@@ -41,6 +47,7 @@ type Props = {
   onRowClick: any;
   onRowSelected: boolean;
   onChangeRowSelected: (data: any[]) => void;
+  onRowCollapsable: boolean;
 };
 
 export const NormalTable = ({
@@ -53,8 +60,9 @@ export const NormalTable = ({
   footerStyle = {},
   onRowClick,
   sortBy,
-  onChangeRowSelected = () => {},
   onRowSelected = false,
+  onChangeRowSelected = () => {},
+  onRowCollapsable = false,
 }: Props) => {
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -78,6 +86,8 @@ export const NormalTable = ({
 
   const [forceUpdate, setForceUpdate] = useState(0);
   const [values, setValues] = useState<any>({});
+  const [openGrouped, setOpenGrouped] = useState(false);
+  const [openGroupedIndex, setOpenGroupedIndex] = useState(0);
 
   useEffect(() => {
     setNormalTableData(tableData);
@@ -209,19 +219,108 @@ export const NormalTable = ({
     });
   }, [headerValues, orderBy, order]);
 
+  const renderCollapsableTable = (columnItem: any) => {
+    if (openGrouped) {
+      let keyValues = Object.keys(columnItem);
+
+      let subTableData: any[] = [];
+      let columnField: string = "";
+      for (let item of keyValues) {
+        if (typeof columnItem[item] === "object") {
+          let itemData = columnItem[item].some((value: any) => {
+            if (typeof value === "object") {
+              columnField = item;
+              return typeof value === "object";
+            }
+          });
+          if (itemData) subTableData = columnItem[item];
+        }
+      }
+      let subTableDataHeaders: any[] = [];
+      if (subTableData?.length > 0) {
+        subTableDataHeaders = Object.keys(subTableData[0]);
+      }
+
+      return (
+        <Box sx={{ margin: 1 }}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "16px",
+                    border: "none",
+                  }}
+                >
+                  {capitalizingData(columnField)}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                {subTableDataHeaders?.length > 0 &&
+                  subTableDataHeaders.map((headerItem: any, key: number) => {
+                    return (
+                      <TableCell key={key} style={{ fontWeight: "bold" }}>
+                        {capitalizingData(headerItem)}
+                      </TableCell>
+                    );
+                  })}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {subTableData.map((data: any, index: number) => {
+                return (
+                  <TableRow key={index}>
+                    {subTableDataHeaders?.length > 0 &&
+                      subTableDataHeaders.map(
+                        (headerItem: any, key: number) => {
+                          return (
+                            <TableCell key={key} style={{ border: "none" }}>
+                              {data[headerItem]}
+                            </TableCell>
+                          );
+                        }
+                      )}
+                  </TableRow>
+                );
+              })}
+              {subTableData.length === 0 && (
+                <TableRow>
+                  <TableCell style={{ border: "none" }}>
+                    No Items found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </Box>
+      );
+    }
+  };
+  // [openGrouped]
+  // );
+
   return (
-    <div>
+    <div style={{ overflow: "hidden" }}>
       <TableContainer style={{ marginTop: "1rem" }}>
-        <Table size="small" aria-label="a dense table">
+        <Table
+          stickyHeader={true}
+          size="small"
+          aria-label="a dense table"
+          sx={{ borderCollapse: "separate", tableLayout: "fixed" }}
+        >
           <TableHead>
             <TableRow>
+              {onRowCollapsable && (
+                <StyledTableCell style={{ width: "2%" }}></StyledTableCell>
+              )}
               {onRowSelected && (
                 <StyledTableCell>{tableHeadCheckBox()}</StyledTableCell>
               )}
               {renderTableHead()}
-              {extraColumn.length > 0 &&
+              {extraColumn?.length > 0 &&
                 extraColumn.map((item: any, key: number) => (
-                  <StyledTableCell key={key}>
+                  <StyledTableCell key={key} style={{ textAlign: "center" }}>
                     {item.headerName ? (
                       capitalizingData(item.headerName)
                     ) : (
@@ -231,12 +330,12 @@ export const NormalTable = ({
                 ))}
             </TableRow>
           </TableHead>
-          <TableBody>
-            {stableSort(normalTableData, getComparator(order, orderBy))
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((columnItem: any, columnKey: number) => {
-                const isItemSelected = isSelected(columnItem);
-                return (
+          {stableSort(normalTableData, getComparator(order, orderBy))
+            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            .map((columnItem: any, columnKey: number) => {
+              const isItemSelected = isSelected(columnItem);
+              return (
+                <TableBody key={columnKey}>
                   <TableRow
                     hover={typeof onRowClick === "function" ? true : false}
                     style={{
@@ -245,7 +344,6 @@ export const NormalTable = ({
                           ? "pointer"
                           : "default",
                     }}
-                    key={columnKey}
                     onClick={
                       typeof onRowClick === "function"
                         ? () => onRowClick(columnItem)
@@ -262,22 +360,56 @@ export const NormalTable = ({
                         />
                       </TableCell>
                     )}
+
+                    {onRowCollapsable && (
+                      <TableCell>
+                        <IconButton
+                          aria-label="expand row"
+                          size="small"
+                          onClick={() => {
+                            setOpenGrouped(!openGrouped);
+                            setOpenGroupedIndex(columnKey);
+                          }}
+                        >
+                          {openGrouped && openGroupedIndex === columnKey ? (
+                            <KeyboardArrowUpIcon />
+                          ) : (
+                            <KeyboardArrowDownIcon />
+                          )}
+                        </IconButton>
+                      </TableCell>
+                    )}
+
                     {headerValues.map(
                       (headerItem: headersInterface, headerKey: number) => {
+                        let value;
+                        if (typeof columnItem[headerItem.name] === "object") {
+                          let itemData = columnItem[headerItem.name].some(
+                            (value: any) => {
+                              return typeof value === "object";
+                            }
+                          );
+                          itemData
+                            ? (value = "-")
+                            : (value = columnItem[headerItem.name]);
+                        } else {
+                          value = columnItem[headerItem.name];
+                        }
                         return (
                           <TableCell key={headerKey} style={{ lineHeight: 0 }}>
                             {typeof headerItem.renderDataContent === "function"
                               ? headerItem.renderDataContent(
                                   columnItem[headerItem.name]
                                 )
-                              : columnItem[headerItem.name]}
+                              : value}
                           </TableCell>
                         );
                       }
                     )}
-                    {extraColumn.length > 0 &&
+
+                    {extraColumn?.length > 0 &&
                       extraColumn.map((item: any, key: number) => (
-                        <TableCell key={key} style={item.style}>
+                        <TableCell key={key}>
                           {item.content ? (
                             <div onClick={() => item.onClick(columnItem)}>
                               {item.content}
@@ -288,9 +420,26 @@ export const NormalTable = ({
                         </TableCell>
                       ))}
                   </TableRow>
-                );
-              })}
-          </TableBody>
+
+                  <TableRow>
+                    <TableCell
+                      style={{
+                        paddingBottom: 0,
+                        paddingTop: 0,
+                        border: "none",
+                      }}
+                      colSpan={headerValues?.length + extraColumn?.length}
+                    >
+                      {openGroupedIndex === columnKey && (
+                        <Collapse in={openGrouped} timeout="auto" unmountOnExit>
+                          {renderCollapsableTable(columnItem)}
+                        </Collapse>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              );
+            })}
         </Table>
       </TableContainer>
 
