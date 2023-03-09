@@ -1,15 +1,9 @@
-// For actions service calling making async functionalities
-import { createAsyncThunk } from "@reduxjs/toolkit";
-
-export const fetchTodos = createAsyncThunk("todos/fetch", async () => {
-  // Fetch the backend endpoint:
-  const response = await fetch(`https://jsonplaceholder.typicode.com/todos`);
-  // Get the JSON from the response:
-  const data = await response.json();
-
-  // Return result:
-  return data;
-});
+// import { createAsyncThunk } from "@reduxjs/toolkit";
+// export const fetchTodos = createAsyncThunk("todos/fetch", async () => {
+//   const response = await fetch(`https://jsonplaceholder.typicode.com/todos`);
+//   const data = await response.json();
+//   return data;
+// });
 
 // const UserAdd = (props: Props) => {
 //   const headers: any[] = [
@@ -80,3 +74,58 @@ export const fetchTodos = createAsyncThunk("todos/fetch", async () => {
 //     </PageLayout>
 //   );
 // };
+
+
+
+// const UserAdd = (props: Props) => {
+//   const action: any[] = [];
+
+//   let columnData: any = [
+//     {
+//       accessorKey: "title",
+//       header: "Title",
+//     },
+//     {
+//       accessorKey: "year",
+//       header: "Year",
+//     },
+//     {
+//       accessorKey: "director",
+//       header: "Directors",
+//     },
+//     {
+//       accessorKey: "runtime",
+//       header: "Runtime",
+//     },
+//     {
+//       accessorKey: "actors",
+//       enableColumnOrdering: false,
+//       header: "Actors",
+//     },
+//   ];
+
+//   return (
+//     <PageLayout title="Add User" actions={action}>
+//       <div>
+//         <MaterialReactTableComponent
+//           tableData={dataArray}
+//           columnData={columnData}
+//           getSubRows={(data: any) => data.general} //for get
+//           enableExpanding
+//         />
+//       </div>
+//     </PageLayout>
+//   );
+// };
+// export default UserAdd;
+// let sampleData = [
+//   {
+//     id: 7,
+//     title: "City of God",
+//     year: "1996",
+//     general: [
+//       { title: "Crime", year: "1111" },
+//       { title: "Drama", year: "1111" },
+//     ],
+//   },
+// ];
